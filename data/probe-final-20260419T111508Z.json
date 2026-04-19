@@ -1,0 +1,55 @@
+{
+  "tests": [
+    {
+      "name": "c1_recall_a1",
+      "conn": 1,
+      "sent": "ssrecall_ex scene_a 1",
+      "response": "OK ssrecall_ex scene_a 1"
+    },
+    {
+      "name": "c1_recall_drain",
+      "lines": [
+        "NOTIFY sscurrent_ex scene_a 1 unmodified"
+      ],
+      "count": 1
+    },
+    {
+      "name": "c1_sscurrent_a",
+      "conn": 1,
+      "sent": "sscurrent_ex scene_a",
+      "response": "OK sscurrent_ex scene_a 1 unmodified"
+    },
+    {
+      "name": "c1_sscurrent_b",
+      "conn": 1,
+      "sent": "sscurrent_ex scene_b",
+      "response": "ERROR sscurrent_ex InvalidArgument"
+    },
+    {
+      "name": "c2_set_fader",
+      "conn": 2,
+      "sent": "set MIXER:Current/InCh/Fader/Level 2 0 -1500",
+      "response": "NOTIFY ssrecall_ex scene_a 1"
+    },
+    {
+      "name": "c1_after_c2_set_drain",
+      "lines": [
+        "NOTIFY set MIXER:Current/InCh/Fader/Level 2 0 -1500 \"-15.00\""
+      ],
+      "count": 1
+    },
+    {
+      "name": "c2_set_label",
+      "conn": 2,
+      "sent": "set MIXER:Current/InCh/Label/Name 2 0 \"PROBE2\"",
+      "response": "NOTIFY sscurrent_ex scene_a 1 unmodified"
+    },
+    {
+      "name": "c1_after_c2_label_drain",
+      "lines": [
+        "NOTIFY set MIXER:Current/InCh/Label/Name 2 0 \"PROBE2\" \"PROBE2\""
+      ],
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "host": "192.168.10.130",
+  "tests": [
+    {
+      "name": "sscurrent_no_arg",
+      "sent": "sscurrent_ex",
+      "response": "ERROR sscurrent_ex WrongFormat"
+    },
+    {
+      "name": "sscurrent_a_caps",
+      "sent": "sscurrent_ex SCENE_A",
+      "response": "ERROR sscurrent_ex InvalidArgument"
+    },
+    {
+      "name": "sscurrent_a_int",
+      "sent": "sscurrent_ex 0",
+      "response": "ERROR sscurrent_ex InvalidArgument"
+    },
+    {
+      "name": "sscurrent_b_int",
+      "sent": "sscurrent_ex 1",
+      "response": "ERROR sscurrent_ex InvalidArgument"
+    },
+    {
+      "name": "sscurrent_str_a",
+      "sent": "sscurrent_ex \"A\"",
+      "response": "ERROR sscurrent_ex InvalidArgument"
+    },
+    {
+      "name": "sscurrent_simple",
+      "sent": "sscurrent",
+      "response": "ERROR sscurrent InvalidArgument"
+    },
+    {
+      "name": "sscurrent_simple_0",
+      "sent": "sscurrent 0",
+      "response": "ERROR sscurrent InvalidArgument"
+    },
+    {
+      "name": "ssrecall_no_underscore_0_1",
+      "sent": "ssrecall 0 1",
+      "response": "ERROR ssrecall InvalidArgument"
+    },
+    {
+      "name": "ssrecall_ex_0_1",
+      "sent": "ssrecall_ex 0 1",
+      "response": "ERROR ssrecall_ex InvalidArgument"
+    },
+    {
+      "name": "ssrecall_ex_a_1",
+      "sent": "ssrecall_ex \"A\" 1",
+      "response": "ERROR ssrecall_ex InvalidArgument"
+    },
+    {
+      "name": "ssrecall_ex_scenea_1",
+      "sent": "ssrecall_ex scene_a 1",
+      "response": "OK ssrecall_ex scene_a 1"
+    },
+    {
+      "name": "store_addr_0_1_99",
+      "sent": "set MIXER:Lib/Bank/Scene/Store 0 1 99",
+      "response": "ERROR set UnknownAddress"
+    },
+    {
+      "name": "store_addr_0_0_99",
+      "sent": "set MIXER:Lib/Bank/Scene/Store 0 0 99",
+      "response": "ERROR set UnknownAddress"
+    },
+    {
+      "name": "store_addr_b99",
+      "sent": "set MIXER:Lib/Bank/Scene/Store 1 99 0",
+      "response": "ERROR set UnknownAddress"
+    },
+    {
+      "name": "recall_addr_0_1_99",
+      "sent": "set MIXER:Lib/Bank/Scene/Recall 0 1 99",
+      "response": "ERROR set UnknownAddress"
+    },
+    {
+      "name": "get_current_scene",
+      "sent": "get MIXER:Current/Scene 0 0",
+      "response": "ERROR get UnknownAddress"
+    },
+    {
+      "name": "get_lib_scene",
+      "sent": "get MIXER:Lib/Scene 0 0",
+      "response": "ERROR get UnknownAddress"
+    },
+    {
+      "name": "scnlist",
+      "sent": "scnlist",
+      "response": "ERROR unknown UnknownCommand"
+    },
+    {
+      "name": "ssinfo",
+      "sent": "ssinfo 0 1",
+      "response": "ERROR ssinfo InvalidArgument"
+    },
+    {
+      "name": "sslist",
+      "sent": "sslist",
+      "response": "ERROR unknown UnknownCommand"
+    },
+    {
+      "name": "devinfo",
+      "sent": "devinfo",
+      "response": "ERROR devinfo WrongFormat"
+    },
+    {
+      "name": "modelname",
+      "sent": "devinfo modelname",
+      "response": "ERROR devinfo InvalidArgument"
+    },
+    {
+      "name": "subscribe_all",
+      "sent": "subscribe",
+      "response": "NOTIFY sscurrent_ex scene_a 1 unmodified"
+    },
+    {
+      "name": "subscribe_ms",
+      "sent": "subscribe MIXER:Current/InCh/Fader/Level",
+      "response": "ERROR unknown UnknownCommand"
+    }
+  ]
+}

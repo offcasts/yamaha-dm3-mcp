@@ -1,0 +1,72 @@
+{
+  "host": "192.168.10.130",
+  "tests": [
+    {
+      "name": "ssstore_ex_a99",
+      "sent": "ssstore_ex scene_b 99",
+      "response": "ERROR unknown UnknownCommand"
+    },
+    {
+      "name": "ssrecall_ex_a1",
+      "sent": "ssrecall_ex scene_a 1",
+      "response": "OK ssrecall_ex scene_a 1"
+    },
+    {
+      "name": "recall_burst",
+      "lines": [
+        "NOTIFY sscurrent_ex scene_a 1 unmodified"
+      ],
+      "count": 1
+    },
+    {
+      "name": "ssrecall_ex_b99",
+      "sent": "ssrecall_ex scene_b 99",
+      "response": "ERROR ssrecall_ex InvalidArgument"
+    },
+    {
+      "name": "recall_b99_burst",
+      "lines": [],
+      "count": 0
+    },
+    {
+      "name": "subscribe_all",
+      "sent": "subscribe",
+      "response": "ERROR unknown UnknownCommand"
+    },
+    {
+      "name": "subscribe_initial",
+      "lines": [],
+      "count": 0
+    },
+    {
+      "name": "set_after_subscribe",
+      "sent": "set MIXER:Current/InCh/Fader/Level 1 0 -2000",
+      "response": "OK set MIXER:Current/InCh/Fader/Level 1 0 -2000 \"-20.00\""
+    },
+    {
+      "name": "post_set_traffic",
+      "lines": [],
+      "count": 0
+    },
+    {
+      "name": "unsubscribe",
+      "sent": "unsubscribe",
+      "response": "ERROR unknown UnknownCommand"
+    },
+    {
+      "name": "devinfo_productname",
+      "sent": "devinfo productname",
+      "response": "OK devinfo productname \"DM3\""
+    },
+    {
+      "name": "devinfo_version",
+      "sent": "devinfo version",
+      "response": "OK devinfo version \"V3.00\""
+    },
+    {
+      "name": "prminfo_count",
+      "sent": "prminfo",
+      "response": "ERROR prminfo WrongFormat"
+    }
+  ]
+}
