@@ -27,6 +27,17 @@ INITIAL_SYNC: list[tuple[str, int, int]] = [
     ("MIXER:Current/St/Fader/Level", 1, 1),
     ("MIXER:Current/MuteGrpCtrl/On", 6, 1),
     ("MIXER:Current/MuteGrpCtrl/Label/Name", 6, 1),
+    # Cue & Monitor (v0.2)
+    ("MIXER:Current/Cue/CueMode", 1, 1),
+    ("MIXER:Current/Cue/InCh/Point", 1, 1),
+    ("MIXER:Current/Cue/OutCh/Point", 1, 1),
+    ("MIXER:Current/Cue/InCh/On", 16, 1),
+    ("MIXER:Current/Cue/Mix/On", 6, 1),
+    ("MIXER:Current/Cue/St/On", 2, 1),
+    ("MIXER:Current/Monitor/On", 1, 1),
+    ("MIXER:Current/Monitor/Fader/Level", 1, 1),
+    ("MIXER:Current/Monitor/CueInterruption", 1, 1),
+    ("MIXER:Current/Monitor/St/MonoMonitor", 1, 1),
 ]
 
 

@@ -791,6 +791,233 @@ async def get_scene_metadata(bank: str, number: int) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Cue & Monitor (v0.2)
+# ---------------------------------------------------------------------------
+
+# Cue On addresses by source type. Stereo bus has 2 indices (L/R), Fx has 2 units.
+_CUE_ON_ADDRESS = {
+    "inch": ("MIXER:Current/Cue/InCh/On", 16),
+    "stinch": ("MIXER:Current/Cue/StInCh/On", 2),
+    "fxrtn": ("MIXER:Current/Cue/FxRtnCh/On", 4),
+    "mix": ("MIXER:Current/Cue/Mix/On", 6),
+    "matrix": ("MIXER:Current/Cue/Mtrx/On", 2),
+    "stereo": ("MIXER:Current/Cue/St/On", 2),
+    "fx": ("MIXER:Current/Cue/Fx/On", 2),
+}
+
+_MONITOR_SOURCE_ADDRESS = {
+    "mix": ("MIXER:Current/Monitor/St/SourceCh/Mix", 6),
+    "matrix": ("MIXER:Current/Monitor/St/SourceCh/Mtrx", 2),
+    "stereo": ("MIXER:Current/Monitor/St/SourceCh/St", 2),
+    "rec": ("MIXER:Current/Monitor/St/SourceCh/Rec", 1),
+    "usb": ("MIXER:Current/Monitor/St/SourceCh/USB", 1),
+}
+
+
+@mcp.tool()
+async def set_cue(
+    target_type: str,
+    target_num: int,
+    on: bool = True,
+    exclusive: bool = False,
+) -> dict:
+    """Toggle cue (PFL/AFL listen) on a channel/bus.
+
+    Args:
+        target_type: 'inch'|'stinch'|'fxrtn'|'mix'|'matrix'|'stereo'|'fx'
+        target_num: 1-based index within the target type.
+        on: True to enable cue, False to clear.
+        exclusive: when True (and on=True), turns off ALL other cues first
+            so only this source is being monitored.
+    """
+    if target_type not in _CUE_ON_ADDRESS:
+        return {"ok": False, "error": {"code": "bad_target_type", "message": target_type}}
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    address, max_count = _CUE_ON_ADDRESS[target_type]
+    if not 1 <= target_num <= max_count:
+        return {
+            "ok": False,
+            "error": {"code": "bad_target_num", "message": f"1..{max_count}"},
+        }
+
+    cleared = 0
+    if exclusive and on:
+        # Turn off every cue across every category
+        for ttype, (addr, count) in _CUE_ON_ADDRESS.items():
+            for x in range(count):
+                if ttype == target_type and x == target_num - 1:
+                    continue
+                if _safety.should_send():
+                    await _client.set(addr, x, 0, 0)
+                    _cache.record_set(addr, x, 0, 0)
+                cleared += 1
+
+    raw = 1 if on else 0
+    if _safety.should_send():
+        await _client.set(address, target_num - 1, 0, raw)
+        _cache.record_set(address, target_num - 1, 0, raw)
+    return {
+        "ok": True,
+        "target_type": target_type,
+        "target_num": target_num,
+        "on": on,
+        "exclusive_cleared": cleared,
+    }
+
+
+@mcp.tool()
+async def clear_all_cues() -> dict:
+    """Turn off cue across every category (panic-clear the solo bus)."""
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    cleared = 0
+    for addr, count in _CUE_ON_ADDRESS.values():
+        for x in range(count):
+            if _safety.should_send():
+                await _client.set(addr, x, 0, 0)
+                _cache.record_set(addr, x, 0, 0)
+            cleared += 1
+    return {"ok": True, "cleared_count": cleared}
+
+
+@mcp.tool()
+async def get_active_cue() -> dict:
+    """Read the read-only `MIXER:Current/Cue/ActiveCue` (currently auditioned source)."""
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    try:
+        result = await _client.get("MIXER:Current/Cue/ActiveCue", 0, 0)
+    except Exception as e:  # noqa: BLE001
+        return {"ok": False, "error": {"code": "rcp_error", "message": str(e)}}
+    return {"ok": True, "active_cue": result.value}
+
+
+@mcp.tool()
+async def set_cue_mode(
+    mode: str | None = None,
+    in_point: str | None = None,
+    out_point: str | None = None,
+) -> dict:
+    """Configure global cue routing.
+
+    Args:
+        mode: cue mode string (e.g. 'MIX', 'MIX+CUE'); range 0..5 per the param dump.
+        in_point: input-channel cue tap point (e.g. 'PFL', 'AFL', etc.).
+        out_point: output-channel cue tap point.
+    """
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    applied: dict = {}
+    for value, address in (
+        (mode, "MIXER:Current/Cue/CueMode"),
+        (in_point, "MIXER:Current/Cue/InCh/Point"),
+        (out_point, "MIXER:Current/Cue/OutCh/Point"),
+    ):
+        if value is None:
+            continue
+        if _safety.should_send():
+            await _client.set(address, 0, 0, value)
+            _cache.record_set(address, 0, 0, value)
+        applied[address.rsplit("/", 1)[-1]] = value
+    return {"ok": True, "applied": applied}
+
+
+@mcp.tool()
+async def set_monitor(
+    on: bool | None = None,
+    level_db: float | None = None,
+    mono: bool | None = None,
+    cue_interrupts: bool | None = None,
+    override_safety: bool = False,
+) -> dict:
+    """Atomic monitor-master control.
+
+    Args:
+        on: enable/disable the monitor bus.
+        level_db: monitor fader level in dB (clamped per safety mode).
+        mono: collapse stereo monitor to mono.
+        cue_interrupts: when True, an active cue replaces the monitor source.
+    """
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    applied: dict = {}
+
+    async def _apply(addr: str, value, label: str):
+        if _safety.should_send():
+            await _client.set(addr, 0, 0, value)
+            _cache.record_set(addr, 0, 0, value)
+        applied[label] = value
+
+    if on is not None:
+        await _apply("MIXER:Current/Monitor/On", 1 if on else 0, "on")
+    if level_db is not None:
+        try:
+            _safety.check_fader_db(
+                level_db if level_db != float("-inf") else -999, override=override_safety
+            )
+            raw = db_to_raw(level_db) if level_db != float("-inf") else NEG_INF_RAW
+        except Exception as e:  # noqa: BLE001
+            return {"ok": False, "error": {"code": "safety", "message": str(e)}}
+        await _apply("MIXER:Current/Monitor/Fader/Level", raw, "level_db")
+    if mono is not None:
+        await _apply("MIXER:Current/Monitor/St/MonoMonitor", 1 if mono else 0, "mono")
+    if cue_interrupts is not None:
+        await _apply(
+            "MIXER:Current/Monitor/CueInterruption", 1 if cue_interrupts else 0, "cue_interrupts"
+        )
+    return {"ok": True, "applied": applied}
+
+
+@mcp.tool()
+async def set_monitor_source(
+    source_type: str,
+    source_num: int = 1,
+    on: bool = True,
+    exclusive: bool = False,
+) -> dict:
+    """Pick which bus(es) feed the monitor output.
+
+    Args:
+        source_type: 'mix' (1-6), 'matrix' (1-2), 'stereo' (1-2), 'rec' (1), 'usb' (1).
+        source_num: 1-based index within that type.
+        on: True to enable, False to disable.
+        exclusive: when True and on=True, turns off all other monitor sources first.
+    """
+    if source_type not in _MONITOR_SOURCE_ADDRESS:
+        return {"ok": False, "error": {"code": "bad_source_type", "message": source_type}}
+    if _client is None:
+        return {"ok": False, "error": {"code": "not_connected"}}
+    address, max_count = _MONITOR_SOURCE_ADDRESS[source_type]
+    if not 1 <= source_num <= max_count:
+        return {
+            "ok": False,
+            "error": {"code": "bad_source_num", "message": f"1..{max_count}"},
+        }
+    cleared = 0
+    if exclusive and on:
+        for stype, (addr, count) in _MONITOR_SOURCE_ADDRESS.items():
+            for x in range(count):
+                if stype == source_type and x == source_num - 1:
+                    continue
+                if _safety.should_send():
+                    await _client.set(addr, x, 0, 0)
+                    _cache.record_set(addr, x, 0, 0)
+                cleared += 1
+    raw = 1 if on else 0
+    if _safety.should_send():
+        await _client.set(address, source_num - 1, 0, raw)
+        _cache.record_set(address, source_num - 1, 0, raw)
+    return {
+        "ok": True,
+        "source_type": source_type,
+        "source_num": source_num,
+        "on": on,
+        "exclusive_cleared": cleared,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Development helper
 # ---------------------------------------------------------------------------
 

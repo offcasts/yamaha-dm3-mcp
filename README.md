@@ -4,18 +4,19 @@ An MCP server that lets Claude set up a Yamaha DM3 digital mixer via natural-lan
 
 ## Status
 
-**v0.1.0 — implementation complete and validated against a live DM3 (V3.00).**
+**v0.2.0 — implementation + cue/monitor coverage validated against a live DM3 (V3.00).**
 
-64 unit tests pass; live integration tests pass against a real console at 192.168.10.130. See [docs/superpowers/specs/M0-probe-findings.md](docs/superpowers/specs/M0-probe-findings.md) for the empirical protocol confirmation.
+73 unit tests pass; live integration tests pass against a real console. See [docs/superpowers/specs/M0-probe-findings.md](docs/superpowers/specs/M0-probe-findings.md) for the empirical protocol confirmation, including the dynamics dead-end (DM3 firmware does not expose comp/gate over RCP).
 
 ## What it does
 
-A Python/FastMCP server that exposes 33 tools to Claude for controlling a Yamaha DM3 over the RCP protocol on TCP port 49280. Tools group into:
+A Python/FastMCP server that exposes **39 tools** to Claude for controlling a Yamaha DM3 over the RCP protocol on TCP port 49280. Tools group into:
 
 - **Connection / safety** (4) — `connect_console`, `disconnect_console`, `get_connection_status`, `set_safety_mode`
 - **Read tools** (6) — cache-backed channel/mix/label/mute-group/scene state, plus `read_meter`
 - **Write primitives** (11) — labels, faders, channel on, mute groups, head-amp gain, phantom, sends, HPF, PEQ, channel link, emergency mute
 - **Macros** (5) — `set_mix_exclusive_inputs`, `label_channels`, `apply_channel_preset`, `configure_mix_bus`, `ramp_fader`
+- **Cue / Monitor** (6) — `set_cue`, `clear_all_cues`, `get_active_cue`, `set_cue_mode`, `set_monitor`, `set_monitor_source`
 - **Scenes** (5) — `list_scenes`, `recall_scene`, `recall_scene_by_name`, `store_current_as_scene` (metadata only — see below), `get_scene_metadata`
 - **Dev** (1) — `run_probe`
 
@@ -121,4 +122,4 @@ The server starts in `limited` safety mode with `max_fader_db = +6.0`. To overri
 
 ## License
 
-TBD (author to decide before v1.0 release).
+MIT — see [LICENSE](LICENSE).

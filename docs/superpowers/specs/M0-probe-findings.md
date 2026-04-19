@@ -92,6 +92,18 @@ After `ssrecall_ex scene_a 1` we receive one NOTIFY: `NOTIFY sscurrent_ex scene_
 
 50 back-to-back gets returned 50 OKs in 0.02 s = ~2500 cmd/s with zero errors. The 5 ms inter-send gap is overkill. Keep it for safety/v1 (matches Companion's `MSG_DELAY`), but mark it as adjustable.
 
+## Dynamics (comp/gate): not exposed on DM3 v3.00 — dead end for v0.2
+
+The full `prminfo` dump is 184 lines. Zero entries match `Cmp`, `Comp`, `Gate`, `Threshold`, `Attack`, `Release`, or `Ratio`. The only `Dyna*` entries are `MIXER:Current/InputChLink/LinkParams/Dyna1` and `Dyna2` — these are **link-group toggles** (whether dynamics state mirrors across linked channels), not the actual dynamics processor parameters.
+
+Live probed 15 candidate spellings (`MIXER:Current/InCh/Cmp/On`, `Comp/On`, `Compressor/On`, `Gate/On`, `Dynamics/On`, `Dyn/On`, `Dyna1/On`, `Dyna2/On`, `DynA/On`, `Cmp/Type`, `Cmp1/On`, `CMP/On`, `GATE/On`, `Cmp/Threshold`, `Gate/Threshold`) — every one returned `ERROR get UnknownAddress`. See `scripts/probe_dynamics.py`.
+
+**Conclusion:** dynamics processing is panel-only on DM3 v3.00. A `set_compressor`/`set_gate` MCP tool is not implementable. If a future DM3 firmware exposes these, re-run `scripts/probe_dynamics.py` to detect.
+
+## Cue/Monitor: fully supported (added in v0.2)
+
+20 cue/monitor parameters are documented in the dump and verified live. v0.2 ships 6 new tools: `set_cue`, `clear_all_cues`, `get_active_cue` (reads the read-only `MIXER:Current/Cue/ActiveCue`), `set_cue_mode`, `set_monitor`, `set_monitor_source`. Live verification (see `scripts/live_cue_smoke.py`) confirmed `ActiveCue` flips `NONE` → `INPUT` when an input is cued, and per-source monitor routing works exclusively as designed.
+
 ## Updates to the implementation plan
 
 The following plan changes are made inline in `2026-04-19-dm3-mcp-implementation.md` and the design spec:
