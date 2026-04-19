@@ -1,0 +1,41 @@
+[project]
+name = "yamaha-dm3-mcp"
+version = "0.1.0"
+description = "MCP server for controlling a Yamaha DM3 digital mixer"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.2.0",
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.3",
+    "ipython>=8.20",
+]
+
+[project.scripts]
+dm3-mcp = "dm3_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dm3_mcp"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "live_hardware: requires a real DM3 on the network",
+]
+addopts = "-m 'not live_hardware'"
