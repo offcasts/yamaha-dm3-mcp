@@ -1,0 +1,773 @@
+===PAGE 1===
+DM3 Series
+OSC Specifications
+Version 1.0.0
+
+===PAGE 2===
+DM3 Series OSC Specifications Version 1.0.0 2
+Table of contents
+0. Revision History ....................................................................................2
+1. Setup ......................................................................................................3
+1.1. Connection Procedure .............................................................................................. 3
+1.2. DM3 Series Configuration ......................................................................................... 3
+1.3. Configuring the Remote Controller ........................................................................... 3
+1.4. Configuration Examples  ........................................................................................... 3
+1.4.1. Parameter setting examples ........................................................................ 3
+1.4.2. Snapshot setting example ............................................................................ 3
+2. Parameter ...............................................................................................4
+2.1. Parameter List........................................................................................................... 4
+2.2. Parameter Value Detail ............................................................................................. 9
+OSC (Open Sound Control) is a protocol for transmitting control information of electronic musical 
+instruments / audio equipment, etc. via a network. This protocol can be used to remotely control the 
+DM3 series. This document describes the connection and setup procedure for remote control using 
+this protocol and lists the necessary parameter information.
+0. Revision History
+Version Date Section Description
+V1.0.0 May 9, 2023 - Initial version
+
+===PAGE 3===
+DM3 Series OSC Specifications Version 1.0.0 3
+1. Setup
+1.1. Connection Procedure
+Connect the remote controller to the network terminal of each device as shown below. The 
+device to be controlled is specified by its IP address. Connect DM3 Series to the Network PC 
+terminal (computer connection terminal for external control) via the Network port on the rear 
+panel. Up to four OSC remote controllers can be connected to one DM3 Series console.
+Remote 
+Controller
+Ethernet
+DM3 Editor
+Ethernet Ethernet
+Network Port
+Network 
+Switch
+Ethernet
+DM3 series
+1.2. DM3 Series Configuration
+IP address setting:
+Uses the same IP address as StageMix and MonitorMix.
+Open the NETWORK window from SETUP in the toolbar, and select "For Mixer Control".
+①①①
+②②②
+1) Select "Static IP".
+2) Specify the IP address and subnet mask.
+1.3. Configuring the Remote Controller
+DM3 series can be controlled from an external device via Ethernet (NETWORK terminal).
+The settings on the remote controller side for each connection are as follows -
+IP Address: Specify the IP address of For Mixer Control of the DM3 Series to be controlled.
+IP Port No.: UDP 49900
+1.4. Configuration Examples 
+Below are several example commands set using an OSC Controller, in this case with the QLab 
+application. QLab does not require type tags to be added to the command. A type tag may be 
+required depending on the OSC Controller application, please check this for the OSC controller 
+to be used.
+1.4.1. Parameter setting examples
+Set the fader level of input channel 1 to -∞
+Category Parameter 
+Description <Action> <OSC address> <X> X name <Y> 
+range Y name <type 
+tag> type tag
+<value> value
+comment
+min max scaling unit
+Input 
+Channel
+Fader Level set MIXER:Current/
+InCh/Fader/Level
+1 - Input 
+Channel Num
+Input 
+Channel
+1 - i: integer -32768 1000 100 dB See 
+Table 1
+Format: /yosc:req/<Action>/<OSC address>/<X>/<Y> <value>
+Command: /yosc:req/set/MIXER:Current/InCh/Fader/Level/1/1 -32768
+Set the channel color of MIX channel 1 to pink
+Category Parameter 
+Description <Action> <OSC address> <X> X name <Y> 
+range Y name <type 
+tag> type tag
+<value> value
+comment
+min max scaling unit
+Mix 
+Channel
+Label Color set MIXER:Current/
+Mix/Label/Color
+1 - Mix 
+Channel Num
+Mix 
+Channel
+1 - s: string See Table 3
+Format: /yosc:req/<Action>/<OSC address>/<X>/<Y> <value>
+Command: /yosc:req/set/MIXER:Current/Mix/Label/Color/1/1 Pink
+Remark: The " " in <Value> is not required in Qlab.
+1.4.2. Snapshot setting example
+Recall SCENE A05
+Category Parameter Description <Action> <OSC address> <type tag> type tag
+<value> value
+comment
+min max scaling unit
+Scene Recall Scene_A ssrecall_ex scene_a s:, i: string,integer 0 99
+Format: /yosc:req/<Action> <OSC address> <value>
+Command: /yosc:req/ssrecall_ex "scene_a" 5
+
+===PAGE 4===
+DM3 Series OSC Specifications Version 1.0.0 4
+2. Parameter
+2.1. Parameter List
+Format: /yosc:req/<Action>/<Address>/<X>/<Y> <type tag> <value> 
+Category Parameter Description <Action> <OSC address> <X> X name <Y> Y name <type 
+tag>
+type 
+tag
+<value> value Commentmin max scaling unit
+Input Channel Fader Level set MIXER:Current/InCh/Fader/Level 1 - Input Channel Num Input Channel 1 — i: integer -32768 1000 100 dB See Table 1
+Input Channel Fader On set MIXER:Current/InCh/Fader/On 1 - Input Channel Num Input Channel 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel To Stereo Pan set MIXER:Current/InCh/ToSt/Pan 1 - Input Channel Num Input Channel 1 — i: integer -63 63 See Table 2
+Input Channel To Stereo On set MIXER:Current/InCh/ToSt/On 1 - Input Channel Num Input Channel 1 - Stereo Bus Num Stereo 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Input Channel Label Name set MIXER:Current/InCh/Label/Name 1 - Input Channel Num Input Channel 1 — s: string Maximum length: 8 
+characters.
+Input Channel Label Color set MIXER:Current/InCh/Label/Color 1 - Input Channel Num Input Channel 1 — s: string See Table 3
+Input Channel Label Icon set MIXER:Current/InCh/Label/Icon 1 - Input Channel Num Input Channel 1 — s: string See Table 4
+Input Channel Label Category set MIXER:Current/InCh/Label/Category 1 - Input Channel Num Input Channel 1 — s: string See Table 5
+Input Channel To Mix Level set MIXER:Current/InCh/ToMix/Level 1 - Input Channel Num Input Channel 1 - Mix Channel Num Mix Channel i: integer -32768 1000 100 dB See Table 1
+Input Channel To Mix On set MIXER:Current/InCh/ToMix/On 1 - Input Channel Num Input Channel 1 - Mix Channel Num Mix Channel i: integer 0 1 0: OFF, 1: ON
+Input Channel To Mix Pan set MIXER:Current/InCh/ToMix/Pan 1 - Input Channel Num Input Channel 1 - Mix Channel Num Mix Channel i: integer -63 63 See Table 2
+Input Channel To Mix Pre Post set MIXER:Current/InCh/ToMix/PrePost 1 - Input Channel Num Input Channel 1 - Mix Channel Num Mix Channel i: integer 0 1 0: OFF, 1: ON
+Input Channel To FX Level set MIXER:Current/InCh/ToFx/Level 1 - Input Channel Num Input Channel 1 - Fx Channel Num FX Channel i: integer -32768 1000 100 dB See Table 1
+Input Channel To FX On set MIXER:Current/InCh/ToFx/On 1 - Input Channel Num Input Channel 1 - Fx Channel Num FX Channel i: integer 0 1 0: OFF, 1: ON
+Input Channel To FX Pre Post set MIXER:Current/InCh/ToFx/PrePost 1 - Input Channel Num Input Channel 1 - Fx Channel Num FX Channel i: integer 0 1 0: OFF, 1: ON
+Input Channel To Matrix Level set MIXER:Current/InCh/ToMtrx/Level 1 - Input Channel Num Input Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -32768 1000 100 dB See Table 1
+Input Channel To Matrix On set MIXER:Current/InCh/ToMtrx/On 1 - Input Channel Num Input Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Input Channel To Matrix Pan set MIXER:Current/InCh/ToMtrx/Pan 1 - Input Channel Num Input Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -63 63 See Table 2
+Input Channel To Matrix Pre Post set MIXER:Current/InCh/ToMtrx/PrePost 1 - Input Channel Num Input Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Input Channel Input Channel Link Assign set MIXER:Current/InputChLink/InCh/Assign 1 - Input Channel Num Input Channel 1 — i: integer 0 9 0: NONE, 1: A … 9: I
+Stereo Input Channel Fader Level set MIXER:Current/StInCh/Fader/Level 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+Stereo Input Channel Fader On set MIXER:Current/StInCh/Fader/On 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To Stereo Pan set MIXER:Current/StInCh/ToSt/Pan 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -63 63 See Table 2
+Stereo Input Channel To Stereo On set MIXER:Current/StInCh/ToSt/On 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 - Stereo Bus Num Stereo 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel Label Name set MIXER:Current/StInCh/Label/Name 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — s: string Maximum length: 8 
+characters.
+Stereo Input Channel Label Color set MIXER:Current/StInCh/Label/Color 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — s: string See Table 3
+Stereo Input Channel Label Icon set MIXER:Current/StInCh/Label/Icon 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — s: string See Table 4
+Stereo Input Channel Label Category set MIXER:Current/StInCh/Label/Category 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — s: string See Table 5
+Stereo Input Channel To Mix Level set MIXER:Current/StInCh/ToMix/Level 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+
+===PAGE 5===
+DM3 Series OSC Specifications Version 1.0.0 5
+2. Parameter
+Category Parameter Description <Action> <OSC address> <X> X name <Y> Y name <type 
+tag>
+type 
+tag
+<value> value Commentmin max scaling unit
+Stereo Input Channel To Mix On set MIXER:Current/StInCh/ToMix/On 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To Mix Pan set MIXER:Current/StInCh/ToMix/Pan 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -63 63 See Table 2
+Stereo Input Channel To Mix Pre Post set MIXER:Current/StInCh/ToMix/PrePost 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To FX Level set MIXER:Current/StInCh/ToFx/Level 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+Stereo Input Channel To FX On set MIXER:Current/StInCh/ToFx/On 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To FX Pre Post set MIXER:Current/StInCh/ToFx/PrePost 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To Matrix Level set MIXER:Current/StInCh/ToMtrx/Level 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+Stereo Input Channel To Matrix On set MIXER:Current/StInCh/ToMtrx/On 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel To Matrix Pan set MIXER:Current/StInCh/ToMtrx/Pan 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer -63 63 See Table 2
+Stereo Input Channel To Matrix Pre Post set MIXER:Current/StInCh/ToMtrx/PrePost 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Input Channel Input Channel Link Assign set MIXER:Current/InputChLink/StInCh/Assign 1 - Stereo Input 
+Channel Num
+Stereo Input 
+Channel
+1 — i: integer 0 9 0: NONE, 1: A … 9: I
+FX Return Channel Fader Level set MIXER:Current/FxRtnCh/Fader/Level 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+FX Return Channel Fader On set MIXER:Current/FxRtnCh/Fader/On 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To Stereo Pan set MIXER:Current/FxRtnCh/ToSt/Pan 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -63 63 See Table 2
+FX Return Channel To Stereo On set MIXER:Current/FxRtnCh/ToSt/On 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 - Stereo Bus Num Stereo 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+FX Return Channel Label Name set MIXER:Current/FxRtnCh/Label/Name 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — s: string Maximum length: 8 
+characters.
+FX Return Channel Label Color set MIXER:Current/FxRtnCh/Label/Color 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — s: string See Table 3
+FX Return Channel Label Icon set MIXER:Current/FxRtnCh/Label/Icon 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — s: string See Table 4
+FX Return Channel Label Category set MIXER:Current/FxRtnCh/Label/Category 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — s: string "FX RTN"
+FX Return Channel To Mix Level set MIXER:Current/FxRtnCh/ToMix/Level 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+FX Return Channel To Mix On set MIXER:Current/FxRtnCh/ToMix/On 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To Mix Pan set MIXER:Current/FxRtnCh/ToMix/Pan 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -63 63 See Table 2
+FX Return Channel To Mix Pre Post set MIXER:Current/FxRtnCh/ToMix/PrePost 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To FX Level set MIXER:Current/FxRtnCh/ToFx/Level 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+FX Return Channel To FX On set MIXER:Current/FxRtnCh/ToFx/On 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To FX Pre Post set MIXER:Current/FxRtnCh/ToFx/PrePost 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To Matrix Level set MIXER:Current/FxRtnCh/ToMtrx/Level 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+
+===PAGE 6===
+DM3 Series OSC Specifications Version 1.0.0 6
+2. Parameter
+Category Parameter Description <Action> <OSC address> <X> X name <Y> Y name <type 
+tag>
+type 
+tag
+<value> value Commentmin max scaling unit
+FX Return Channel To Matrix On set MIXER:Current/FxRtnCh/ToMtrx/On 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel To Matrix Pan set MIXER:Current/FxRtnCh/ToMtrx/Pan 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer -63 63 See Table 2
+FX Return Channel To Matrix Pre Post set MIXER:Current/FxRtnCh/ToMtrx/PrePost 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+FX Return Channel Input Channel Link Assign set MIXER:Current/InputChLink/FxRtnCh/Assign 1 - Fx Return Channel 
+Num
+FX Return 
+Channel
+1 — i: integer 0 9 0: NONE, 1: A … 9: I
+Mix Channel Fader Level set MIXER:Current/Mix/Fader/Level 1 - Mix Channel Num Mix Channel 1 — i: integer -32768 1000 100 dB See Table 1
+Mix Channel Fader On set MIXER:Current/Mix/Fader/On 1 - Mix Channel Num Mix Channel 1 — i: integer 0 1 0: OFF, 1: ON
+Mix Channel Pan Link set MIXER:Current/Mix/PanLink 1 - Mix Channel Num Mix Channel 1 — i: integer 0 1 0: OFF, 1: ON
+Mix Channel To Stereo Pan set MIXER:Current/Mix/ToSt/Pan 1 - Mix Channel Num Mix Channel 1 — i: integer -63 63 See Table 2
+Mix Channel To Stereo On set MIXER:Current/Mix/ToSt/On 1 - Mix Channel Num Mix Channel 1 - Stereo Bus Num Stereo 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Mix Channel Output Balance set MIXER:Current/Mix/Out/Balance 1 - Mix Channel Num Mix Channel 1 — i: integer -63 63 See Table 2
+Mix Channel Label Name set MIXER:Current/Mix/Label/Name 1 - Mix Channel Num Mix Channel 1 — s: string Maximum length: 8 
+characters.
+Mix Channel Label Color set MIXER:Current/Mix/Label/Color 1 - Mix Channel Num Mix Channel 1 — s: string See Table 3
+Mix Channel Label Icon set MIXER:Current/Mix/Label/Icon 1 - Mix Channel Num Mix Channel 1 — s: string See Table 4
+Mix Channel Label Category set MIXER:Current/Mix/Label/Category 1 - Mix Channel Num Mix Channel 1 — s: string See Table 6
+Mix Channel To Matrix Level set MIXER:Current/Mix/ToMtrx/Level 1 - Mix Channel Num Mix Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -32768 1000 100 dB See Table 1
+Mix Channel To Matrix On set MIXER:Current/Mix/ToMtrx/On 1 - Mix Channel Num Mix Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Mix Channel To Matrix Pan set MIXER:Current/Mix/ToMtrx/Pan 1 - Mix Channel Num Mix Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -63 63 See Table 2
+Mix Channel To Matrix Pre Post set MIXER:Current/Mix/ToMtrx/PrePost 1 - Mix Channel Num Mix Channel 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Stereo Channel Fader Level set MIXER:Current/St/Fader/Level 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+Stereo Channel Fader On set MIXER:Current/St/Fader/On 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Stereo Channel Output Balance set MIXER:Current/St/Out/Balance 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — i: integer -63 63 See Table 2
+Stereo Channel Label Name set MIXER:Current/St/Label/Name 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — s: string Maximum length: 8 
+characters.
+Stereo Channel Label Color set MIXER:Current/St/Label/Color 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — s: string See Table 3
+Stereo Channel Label Icon set MIXER:Current/St/Label/Icon 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — s: string See Table 4
+Stereo Channel Label Category set MIXER:Current/St/Label/Category 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 — s: string See Table 6
+Stereo Channel To Matrix Level set MIXER:Current/St/ToMtrx/Level 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -32768 1000 100 dB See Table 1
+Stereo Channel To Matrix On set MIXER:Current/St/ToMtrx/On 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Stereo Channel To Matrix Pan set MIXER:Current/St/ToMtrx/Pan 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer -63 63 See Table 2
+Stereo Channel To Matrix Pre Post set MIXER:Current/St/ToMtrx/PrePost 1 - Stereo Channel 
+Num
+Stereo 
+Channel
+1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+
+===PAGE 7===
+DM3 Series OSC Specifications Version 1.0.0 7
+2. Parameter
+Category Parameter Description <Action> <OSC address> <X> X name <Y> Y name <type 
+tag>
+type 
+tag
+<value> value Commentmin max scaling unit
+Matrix Channel Fader Level set MIXER:Current/Mtrx/Fader/Level 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — i: integer -32768 1000 100 dB See Table 1
+Matrix Channel Fader On set MIXER:Current/Mtrx/Fader/On 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Matrix Channel Label Name set MIXER:Current/Mtrx/Label/Name 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — s: string Maximum length: 8 
+characters.
+Matrix Channel Label Color set MIXER:Current/Mtrx/Label/Color 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — s: string See Table 3
+Matrix Channel Label Icon set MIXER:Current/Mtrx/Label/Icon 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — s: string See Table 4
+Matrix Channel Label Category set MIXER:Current/Mtrx/Label/Category 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — s: string See Table 6
+Matrix Channel Pan Link set MIXER:Current/Mtrx/PanLink 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — i: integer 0 1 0: OFF, 1: ON
+Matrix Channel Output Balance set MIXER:Current/Mtrx/Out/Balance 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+1 — i: integer -63 63 See Table 2
+FX Channel Fader Level set MIXER:Current/Fx/Fader/Level 1 - Fx Channel Num FX Channel 1 — i: integer -32768 1000 100 dB See Table 1
+FX Channel Fader On set MIXER:Current/Fx/Fader/On 1 - Fx Channel Num FX Channel 1 — i: integer 0 1 0: OFF, 1: ON
+FX Channel Label Name set MIXER:Current/Fx/Label/Name 1 - Fx Channel Num FX Channel 1 — s: string Maximum length: 8 
+characters.
+FX Channel Label Color set MIXER:Current/Fx/Label/Color 1 - Fx Channel Num FX Channel 1 — s: string See Table 3
+FX Channel Label Icon set MIXER:Current/Fx/Label/Icon 1 - Fx Channel Num FX Channel 1 — s: string See Table 4
+FX Channel Label Category set MIXER:Current/Fx/Label/Category 1 - Fx Channel Num FX Channel 1 — s: string See Table 6
+Mute Group Control On set MIXER:Current/MuteGrpCtrl/On 1 - Mute Group Num Mute Group 1 — i: integer 0 1 0: OFF, 1: ON
+Mute Group Control Label Name set MIXER:Current/MuteGrpCtrl/Label/Name 1 - Mute Group Num Mute Group 1 — s: string Maximum length: 8 
+characters.
+Input Channel Link Link Parameter EQ set MIXER:Current/InputChLink/LinkParams/EQ 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Fader set MIXER:Current/InputChLink/LinkParams/Fader 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Channel On set MIXER:Current/InputChLink/LinkParams/ChOn 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter To Stereo set MIXER:Current/InputChLink/LinkParams/ToSt 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Mute set MIXER:Current/InputChLink/LinkParams/Mute 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Matrix Send set MIXER:Current/InputChLink/LinkParams/MtrxSend 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Matrix Send 
+On
+set MIXER:Current/InputChLink/LinkParams/MtrxSendOn 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter FX Send set MIXER:Current/InputChLink/LinkParams/FxSend 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter FX Send On set MIXER:Current/InputChLink/LinkParams/FxSendOn 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter HA set MIXER:Current/InputChLink/LinkParams/HA 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter HPF set MIXER:Current/InputChLink/LinkParams/HPF 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Digital Gain set MIXER:Current/InputChLink/LinkParams/DigitalGain 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Mix Send set MIXER:Current/InputChLink/LinkParams/MixSend 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Mix Send On set MIXER:Current/InputChLink/LinkParams/MixSendOn 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Delay set MIXER:Current/InputChLink/LinkParams/Delay 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Dynamics1 set MIXER:Current/InputChLink/LinkParams/Dyna1 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter Dynamics2 set MIXER:Current/InputChLink/LinkParams/Dyna2 1 - 9 Link Group 1 — i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter To Mix set MIXER:Current/InputChLink/SendParams/ToMix 1 - 9 Link Group 1 - Mix Channel Num Mix Channel i: integer 0 1 0: OFF, 1: ON
+
+===PAGE 8===
+DM3 Series OSC Specifications Version 1.0.0 8
+2. Parameter
+Category Parameter Description <Action> <OSC address> <X> X name <Y> Y name <type 
+tag>
+type 
+tag
+<value> value Commentmin max scaling unit
+Input Channel Link Link Parameter To Matrix set MIXER:Current/InputChLink/SendParams/ToMtrx 1 - 9 Link Group 1 - Matrix Channel 
+Num
+Matrix 
+Channel
+i: integer 0 1 0: OFF, 1: ON
+Input Channel Link Link Parameter To Fx set MIXER:Current/InputChLink/SendParams/ToFx 1 - 9 Link Group 1 - Fx Channel Num FX Channel i: integer 0 1 0: OFF, 1: ON
+Local I/O Control Local Input HA Gain set IO:Current/InCh/HAGain 1 - Local Input Num Input Channel 1 — i: integer 0 64 dB See Table 7
+Local I/O Control Local Input 48V On set IO:Current/InCh/48VOn 1 - Local Input Num Input Channel 1 — i: integer 0 1 0: OFF, 1: ON
+Snapshot
+Format: /yosc:req/<Action> <type tag> <OSC address> <value>
+Category Parameter Description <Action> <OSC address> <type tag> type tag <value> value comment
+min max scaling unit
+Scene Recall Scene_A ssrecall_ex scene_a s:, i: string,integer 0 99
+Scene Get Current Scene_A Number sscurrent_ex scene_a s: string
+Scene Recall Scene_B ssrecall_ex scene_b s:, i: string,integer 0 99
+Scene Get Current Scene_B Number sscurrent_ex scene_b s: string
+
+===PAGE 9===
+DM3 Series OSC Specifications Version 1.0.0 9
+2. Parameter
+2.2. Parameter Value Detail
+Table 1 Fader Level
+Table No. Parameter Value Parameter String Table No. Parameter Value Parameter String
+0 -32768 “-∞” 22 -1000 “-10.00”
+1 -13800 “-138.0” 23 -900 “-9.00”
+2 -12000 “-120.0” 24 -800 “-8.00”
+3 -10500 “-105.0” 25 -700 “-7.00”
+4 -9000 “-90.00” 26 -600 “-6.00”
+5 -7000 “-70.00” 27 -500 “-5.00”
+6 -6000 “-60.00” 28 -400 “-4.00”
+7 -5500 “-55.00” 29 -300 “-3.00”
+8 -5000 “-50.00” 30 -200 “-2.00”
+9 -4500 “-45.00” 31 -100 “-1.00”
+10 -4000 “-40.00” 32 0 “0.00”
+11 -3500 “-35.00” 33 100 “1.00”
+12 -3000 “-30.00” 34 200 “2.00”
+13 -2800 “-28.00” 35 300 “3.00”
+14 -2600 “-26.00” 36 400 “4.00”
+15 -2400 “-24.00” 37 500 “5.00”
+16 -2200 “-22.00” 38 600 “6.00”
+17 -2000 “-20.00” 39 700 “7.00”
+18 -1800 “-18.00” 40 800 “8.00”
+19 -1600 “-16.00” 41 900 “9.00”
+20 -1400 “-14.00” 42 1000 “10.00”
+21 -1200 “-12.00”
+Table 2 Pan/Balance
+Table No. Parameter Value Parameter String
+0 -63 “L63”
+1 -60 “L60”
+2 -55 “L55”
+3 -50 “L50”
+4 -45 “L45”
+5 -40 “L40”
+6 -35 “L35”
+7 -30 “L30”
+8 -25 “L25”
+9 -20 “L20”
+10 -15 “L15”
+11 -10 “L10”
+12 -5 “L5”
+13 0 “C”
+14 5 “R5”
+15 10 “R10”
+16 15 “R15”
+17 20 “R20”
+18 25 “R25”
+19 30 “R30”
+20 35 “R35”
+21 40 “R40”
+22 45 “R45”
+23 50 “R50”
+24 55 “R55”
+25 60 “R60”
+26 63 “R63”
+
+===PAGE 10===
+DM3 Series OSC Specifications Version 1.0.0 10
+2. Parameter
+Table 3 Channel Color
+“Blue”
+“Green”
+“Orange”
+“Pink”
+“Purple”
+“Red”
+“SkyBlue”
+“Yellow”
+“Cyan”
+“Magenta”
+“Off”
+Table 4 Channel Icon
+“Kick” “Strings” “Monitor”
+“Snare” “Piano” “Effect”
+“Hi-Hat” “Organ” “Processor”
+“TomTom” “Keyboard” “Media1”
+“FloorTom” “Male” “Media2”
+“Cymbal” “Female” “Media3”
+“Drumkit” “Choir” “Video”
+“Perc.” “DynamicMic” “Mixer”
+“Mallets” “CondenserMic” “PC”
+“A.Bass” “InstMic” “Audience”
+“E.Bass” “WirelessMic” “ArrowLeft”
+“BassAmp” “Headset” “ArrowRight”
+“A.Guitar” “SpeechMic” “Exclamation”
+“E.Guitar” “DirectBox” “Smile”
+“GuitarAmp” “Foh” “Money”
+“Trumpet” “Speaker” “Star1”
+“Trombone” “SubWoofer” “Star2”
+“Saxophone” “Wedge” “Blank”
+“Flute” “In-Ear”
+Table 5 Channel Category (Input)
+“----”
+“Vocal”
+“Drums”
+“Guitars”
+“Keys”
+“Horns”
+“Strings”
+“Spoken”
+“FX RTN”
+“Others”
+Table 6 Channel Category (Output)
+“----”
+“FX”
+“Output”
+“Others”
+
+===PAGE 11===
+DM3 Series OSC Specifications Version 1.0.0 11
+2. Parameter
+Table 7 HA Gain
+Table No. Parameter Value Parameter String Table No. Parameter Value Parameter String
+0 0 “0” 33 33 “+33”
+1 1 “+1” 34 34 “+34”
+2 2 “+2” 35 35 “+35”
+3 3 “+3” 36 36 “+36”
+4 4 “+4” 37 37 “+37”
+5 5 “+5” 38 38 “+38”
+6 6 “+6” 39 39 “+39”
+7 7 “+7” 40 40 “+40”
+8 8 “+8” 41 41 “+41”
+9 9 “+9” 42 42 “+42”
+10 10 “+10” 43 43 “+43”
+11 11 “+11” 44 44 “+44”
+12 12 “+12” 45 45 “+45”
+13 13 “+13” 46 46 “+46”
+14 14 “+14” 47 47 “+47”
+15 15 “+15” 48 48 “+48”
+16 16 “+16” 49 49 “+49”
+17 17 “+17” 50 50 “+50”
+18 18 “+18” 51 51 “+51”
+19 19 “+19” 52 52 “+52”
+20 20 “+20” 53 53 “+53”
+21 21 “+21” 54 54 “+54”
+22 22 “+22” 55 55 “+55”
+23 23 “+23” 56 56 “+56”
+24 24 “+24” 57 57 “+57”
+25 25 “+25” 58 58 “+58”
+26 26 “+26” 59 59 “+59”
+27 27 “+27” 60 60 “+60”
+28 28 “+28” 61 61 “+61”
+29 29 “+29” 62 62 “+62”
+30 30 “+30” 63 63 “+63”
+31 31 “+31” 64 64 “+64”
+32 32 “+32”
+Table 8 Link Group
+1: A
+2: B
+...
+9: I
+DM3/DM3S Max Channel Numbers
+Input Channel 16
+Stereo Input Channel 2
+Fx Return Channel 4
+Mix Channel 6
+Stereo Channel 2
+Matrix Channel 2
+Fx Channel 2
+Mute Group 6
+Input Channel Link 10
+Input Channel Link Group 9
+Local Input 16
+Stereo Bus 1
+DCA Group 0
+Output Channel Link 0
+Output Channel Link Group 0
+PEQ Inch Band 0
+PEQ Mix Band 0
+PEQ Matrix Band 0
+Split Side 0
+Prmnum Result 145
+
