@@ -675,7 +675,13 @@ async def ramp_fader(
     if target_db == float("-inf") and _safety.should_send():
         await _client.set(addr, target_num - 1, 0, NEG_INF_RAW)
         _cache.record_set(addr, target_num - 1, 0, NEG_INF_RAW)
-    return {"ok": True, "target_type": target_type, "target_num": target_num, "final_db": target_db, "points": points}
+    return {
+        "ok": True,
+        "target_type": target_type,
+        "target_num": target_num,
+        "final_db": target_db,
+        "points": points,
+    }
 
 
 # ---------------------------------------------------------------------------

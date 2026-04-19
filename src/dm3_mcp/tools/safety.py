@@ -6,15 +6,15 @@ from typing import Literal
 Mode = Literal["preview", "live", "limited"]
 
 
-class FaderLimitExceeded(Exception):
+class FaderLimitExceeded(Exception):  # noqa: N818
     pass
 
 
-class ReadOnlyAddress(Exception):
+class ReadOnlyAddress(Exception):  # noqa: N818
     pass
 
 
-class PreviewOnly(Exception):
+class PreviewOnly(Exception):  # noqa: N818
     pass
 
 

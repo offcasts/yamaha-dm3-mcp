@@ -10,7 +10,7 @@ import asyncio
 import json
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -20,7 +20,7 @@ async def send_and_read(reader, writer, line: str, timeout: float = 2.0) -> str:
     try:
         resp = await asyncio.wait_for(reader.readuntil(b"\n"), timeout=timeout)
         return resp.decode().rstrip()
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return "<TIMEOUT>"
 
 
@@ -35,7 +35,7 @@ async def drain_notifies(reader, duration_s: float) -> list[str]:
                 break
             line = await asyncio.wait_for(reader.readuntil(b"\n"), timeout=remaining)
             lines.append(line.decode().rstrip())
-        except asyncio.TimeoutError:
+        except TimeoutError:
             break
     return lines
 
@@ -44,7 +44,7 @@ async def run_probe(host: str, port: int, *, auto_yes: bool = False) -> dict:
     results: dict = {
         "host": host,
         "port": port,
-        "started_at": datetime.now(timezone.utc).isoformat(),
+        "started_at": datetime.now(UTC).isoformat(),
         "tests": [],
     }
 
@@ -60,7 +60,7 @@ async def run_probe(host: str, port: int, *, auto_yes: bool = False) -> dict:
         try:
             greeting = await asyncio.wait_for(reader.readuntil(b"\n"), timeout=0.5)
             record("baseline_greeting", "", greeting.decode().rstrip())
-        except asyncio.TimeoutError:
+        except TimeoutError:
             record("baseline_greeting", "", "<silent>", "DM3 did not send a greeting")
 
         # 2. Documented: set fader on ch 1 to -10 dB
@@ -243,7 +243,7 @@ async def run_probe(host: str, port: int, *, auto_yes: bool = False) -> dict:
                 count += 1
                 if count >= 50:
                     break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
         record(
             "rate_limit_burst_50",
@@ -255,7 +255,7 @@ async def run_probe(host: str, port: int, *, auto_yes: bool = False) -> dict:
         writer.close()
         await writer.wait_closed()
 
-    results["completed_at"] = datetime.now(timezone.utc).isoformat()
+    results["completed_at"] = datetime.now(UTC).isoformat()
     return results
 
 
@@ -271,7 +271,7 @@ def main() -> int:
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_path = out_dir / f"probe-results-{ts}.json"
     out_path.write_text(json.dumps(results, indent=2))
     print(f"\nWrote {out_path}")

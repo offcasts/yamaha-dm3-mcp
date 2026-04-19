@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -29,7 +29,7 @@ class SceneStore:
         notes: str = "",
     ) -> None:
         key = f"{bank}:{number}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         existing = self._data["scenes"].get(key, {})
         self._data["scenes"][key] = {
             "bank": bank,
@@ -49,7 +49,7 @@ class SceneStore:
         entry = self._data["scenes"].get(key)
         if entry is None:
             return
-        entry["last_used_at"] = datetime.now(timezone.utc).isoformat()
+        entry["last_used_at"] = datetime.now(UTC).isoformat()
         entry["use_count"] = entry.get("use_count", 0) + 1
 
     def get(self, bank: str, number: int) -> dict | None:

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Final confirmations: sscurrent_ex after recall, second-connection NOTIFY behaviour."""
-import asyncio, json, sys, time
-from datetime import datetime, timezone
+import asyncio
+import json
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 
 HOST = "192.168.10.130"
 PORT = 49280
 
 async def s(reader, writer, line, t=2.0):
-    writer.write((line + "\n").encode()); await writer.drain()
+    writer.write((line + "\n").encode())
+    await writer.drain()
     try:
         return (await asyncio.wait_for(reader.readuntil(b"\n"), t)).decode().rstrip()
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return "<TIMEOUT>"
 
 async def drain(reader, dur):
@@ -21,7 +24,7 @@ async def drain(reader, dur):
         try:
             line = await asyncio.wait_for(reader.readuntil(b"\n"), end - time.monotonic())
             out.append(line.decode().rstrip())
-        except asyncio.TimeoutError:
+        except TimeoutError:
             break
     return out
 
@@ -61,10 +64,12 @@ async def main():
     results["tests"].append({"name": "c1_after_c2_label_drain", "lines": n3, "count": len(n3)})
     print(f"[c1_after_c2_label_drain] count={len(n3)} sample={n3[:5]}")
 
-    w1.close(); w2.close()
-    await w1.wait_closed(); await w2.wait_closed()
+    w1.close()
+    w2.close()
+    await w1.wait_closed()
+    await w2.wait_closed()
     Path("data").mkdir(exist_ok=True)
-    out = Path("data") / f"probe-final-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
+    out = Path("data") / f"probe-final-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}.json"
     out.write_text(json.dumps(results, indent=2))
     print(f"\nWrote {out}")
 

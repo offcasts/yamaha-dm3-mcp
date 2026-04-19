@@ -12,8 +12,6 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
-from .types import quote_if_needed
-
 
 def _format_value(value) -> str:
     if isinstance(value, bool):

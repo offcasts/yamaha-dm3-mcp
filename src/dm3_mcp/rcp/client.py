@@ -50,11 +50,11 @@ class RcpError(Exception):
         self.command = command
 
 
-class RcpTimeout(Exception):
+class RcpTimeout(Exception):  # noqa: N818
     pass
 
 
-class ConnectionLost(Exception):
+class ConnectionLost(Exception):  # noqa: N818
     pass
 
 
@@ -127,7 +127,7 @@ class RcpClient:
         await self._pending.put((line, fut))
         try:
             return await asyncio.wait_for(fut, timeout=timeout)
-        except asyncio.TimeoutError as e:
+        except TimeoutError as e:
             raise RcpTimeout(f"no response to {line.strip()!r}") from e
 
     async def _write_loop(self) -> None:

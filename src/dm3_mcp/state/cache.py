@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from .views import ChannelView, MixView
 
 Source = Literal["init", "set", "notify", "stale"]
 
@@ -41,12 +44,12 @@ class StateCache:
                 value=val.value, updated_at=val.updated_at, source="stale"
             )
 
-    def channel(self, ch: int) -> "ChannelView":
+    def channel(self, ch: int) -> ChannelView:
         from .views import ChannelView
 
         return ChannelView(self, ch)
 
-    def mix(self, mix_num: int) -> "MixView":
+    def mix(self, mix_num: int) -> MixView:
         from .views import MixView
 
         return MixView(self, mix_num)

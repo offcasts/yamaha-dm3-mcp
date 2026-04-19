@@ -8,7 +8,7 @@ import argparse
 import asyncio
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -18,7 +18,7 @@ async def send_and_read(reader, writer, line: str, timeout: float = 2.0) -> str:
     try:
         resp = await asyncio.wait_for(reader.readuntil(b"\n"), timeout=timeout)
         return resp.decode().rstrip()
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return "<TIMEOUT>"
 
 
@@ -89,7 +89,7 @@ def main() -> int:
     args = p.parse_args()
 
     results = asyncio.run(run(args.host, args.port))
-    out = Path("data") / f"probe-scenes-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
+    out = Path("data") / f"probe-scenes-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(results, indent=2))
     print(f"\nWrote {out}")
