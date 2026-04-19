@@ -51,7 +51,7 @@ The design and planning happened on a different machine that did **not** have ac
 - Static IP on the console (SETUP → NETWORK → "For Mixer Control" → Static IP).
 - Default console IP in docs is `192.168.0.128`; the actual IP on this network may differ. Export `DM3_HOST` in the shell where tests run:
   ```bash
-  export DM3_HOST=<actual-DM3-IP>
+  export DM3_HOST=192.168.10.130
   ```
 - The probe will write to scene slot **B99** as a scratch slot. If you care about existing B99 content on the console, back it up or edit the probe to use a different slot before running Task 4.
 
