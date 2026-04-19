@@ -28,19 +28,34 @@ class FakeDM3:
     async def stop(self) -> None:
         assert self._server is not None
         self._server.close()
-        await self._server.wait_closed()
+        # Python 3.12.1+ Server.wait_closed() waits on every open connection task.
+        # Our custom test handlers don't all clean up their writers, so cap the
+        # wait so the test doesn't hang the event loop.
+        try:
+            await asyncio.wait_for(self._server.wait_closed(), timeout=1.0)
+        except TimeoutError:
+            pass
 
     async def _handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        while True:
+        try:
+            while True:
+                try:
+                    line = await reader.readuntil(b"\n")
+                except asyncio.IncompleteReadError:
+                    break
+                cmd = line.decode().rstrip()
+                self.received.append(cmd)
+                response = self.responses.get(cmd, "ERROR unknown")
+                writer.write((response + "\n").encode())
+                await writer.drain()
+        finally:
+            # Python 3.12.1+ tightened Server.wait_closed() to block on open
+            # connection tasks; we must close our writer here or fake.stop() hangs.
+            writer.close()
             try:
-                line = await reader.readuntil(b"\n")
-            except asyncio.IncompleteReadError:
-                break
-            cmd = line.decode().rstrip()
-            self.received.append(cmd)
-            response = self.responses.get(cmd, "ERROR unknown")
-            writer.write((response + "\n").encode())
-            await writer.drain()
+                await asyncio.wait_for(writer.wait_closed(), timeout=1.0)
+            except (TimeoutError, Exception):
+                pass
 
 
 @pytest.mark.asyncio

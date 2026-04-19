@@ -87,9 +87,12 @@ class RcpClient:
                 task.cancel()
         if self._writer:
             self._writer.close()
+            # Python 3.12 tightened task-cancellation semantics; wait_closed() can
+            # hang indefinitely if the underlying transport's reader/writer task was
+            # cancelled mid-IO. Bound the wait so close() always returns.
             try:
-                await self._writer.wait_closed()
-            except Exception:
+                await asyncio.wait_for(self._writer.wait_closed(), timeout=1.0)
+            except (TimeoutError, Exception):
                 pass
         if self._pending is not None:
             while not self._pending.empty():
@@ -123,7 +126,10 @@ class RcpClient:
     async def _send(self, line: str, timeout: float = RESPONSE_TIMEOUT_S) -> ParsedResponse:
         if self._writer is None or self._closing or self._pending is None:
             raise ConnectionLost("not connected")
-        fut: asyncio.Future[ParsedResponse] = asyncio.get_event_loop().create_future()
+        # asyncio.get_running_loop() is the 3.12+-correct way; get_event_loop() is
+        # deprecated outside a running loop and behaves inconsistently in
+        # pytest-asyncio under 3.12.
+        fut: asyncio.Future[ParsedResponse] = asyncio.get_running_loop().create_future()
         await self._pending.put((line, fut))
         try:
             return await asyncio.wait_for(fut, timeout=timeout)
